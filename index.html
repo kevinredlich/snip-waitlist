@@ -1,1200 +1,908 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>snip — ¿Cuánto estás perdiendo al mes?</title>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600&display=swap"
-    rel="stylesheet">
-  <style>
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    :root {
-      --black: #0C0C0C;
-      --blue: #0057FF;
-      --white: #FFFFFF;
-      --fog: #F5F5F3;
-      --rule: #E8E8E5;
-      --mid: #5A5A5A;
-      --light: #9A9A9A;
-      --green: #00B87A;
-      --red: #FF3B30;
-    }
-
-    html,
-    body {
-      height: 100%;
-      font-family: 'Geist', system-ui, sans-serif;
-      -webkit-font-smoothing: antialiased;
-      background: var(--black);
-      color: var(--white);
-      overflow: hidden;
-    }
-
-    /* ── PROGRESS BAR ── */
-    .progress-bar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background: rgba(255, 255, 255, .08);
-      z-index: 100;
-    }
-
-    .progress-fill {
-      height: 100%;
-      background: var(--blue);
-      transition: width .5s cubic-bezier(.4, 0, .2, 1);
-      width: 0%;
-    }
-
-    /* ── TOP NAV ── */
-    .top-nav {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      padding: 20px 32px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      z-index: 99;
-    }
-
-    .nav-logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .nav-logo-icon {
-      width: 28px;
-      height: 28px;
-      border-radius: 7px;
-      background: var(--white);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .nav-logo-word {
-      font-size: 15px;
-      font-weight: 900;
-      letter-spacing: -.04em;
-      color: var(--white);
-    }
-
-    .nav-step {
-      font-family: 'Geist Mono', monospace;
-      font-size: 11px;
-      color: #444;
-      letter-spacing: .06em;
-    }
-
-    /* ── SCREENS ── */
-    .screens {
-      position: fixed;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .screen {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 80px 32px 40px;
-      opacity: 0;
-      transform: translateY(32px);
-      pointer-events: none;
-      transition: opacity .45s cubic-bezier(.4, 0, .2, 1), transform .45s cubic-bezier(.4, 0, .2, 1);
-      text-align: center;
-    }
-
-    .screen.active {
-      opacity: 1;
-      transform: translateY(0);
-      pointer-events: all;
-    }
-
-    .screen.exit-up {
-      opacity: 0;
-      transform: translateY(-32px);
-      pointer-events: none;
-    }
-
-    /* ── INTRO SCREEN ── */
-    .intro-eyebrow {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-      color: var(--blue);
-      margin-bottom: 24px;
-    }
-
-    .intro-title {
-      font-size: clamp(36px, 7vw, 72px);
-      font-weight: 900;
-      letter-spacing: -.04em;
-      line-height: .95;
-      margin-bottom: 24px;
-      max-width: 680px;
-    }
-
-    .intro-title .cut {
-      position: relative;
-      display: inline-block;
-      color: var(--white);
-    }
-
-    .intro-title .dim {
-      color: rgba(255, 255, 255, .25);
-    }
-
-    .intro-sub {
-      font-size: 17px;
-      font-weight: 400;
-      color: #666;
-      max-width: 420px;
-      line-height: 1.6;
-      margin-bottom: 40px;
-    }
-
-    .intro-meta {
-      display: flex;
-      align-items: center;
-      gap: 24px;
-      margin-bottom: 48px;
-    }
-
-    .intro-meta-item {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      font-size: 12px;
-      color: #444;
-    }
-
-    .intro-meta-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--blue);
-      flex-shrink: 0;
-    }
-
-    /* ── QUESTION SCREENS ── */
-    .q-label {
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: .2em;
-      text-transform: uppercase;
-      color: var(--blue);
-      margin-bottom: 20px;
-    }
-
-    .q-text {
-      font-size: clamp(22px, 4vw, 38px);
-      font-weight: 800;
-      letter-spacing: -.03em;
-      line-height: 1.1;
-      margin-bottom: 12px;
-      max-width: 600px;
-    }
-
-    .q-sub {
-      font-size: 14px;
-      color: #555;
-      margin-bottom: 40px;
-      max-width: 440px;
-      line-height: 1.6;
-    }
-
-    /* ── OPTIONS ── */
-    .options {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      width: 100%;
-      max-width: 480px;
-    }
-
-    .option {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 16px 20px;
-      border: 1px solid rgba(255, 255, 255, .08);
-      border-radius: 10px;
-      cursor: pointer;
-      transition: all .2s;
-      text-align: left;
-      background: rgba(255, 255, 255, .03);
-    }
-
-    .option:hover {
-      border-color: rgba(255, 255, 255, .2);
-      background: rgba(255, 255, 255, .06);
-    }
-
-    .option.selected {
-      border-color: var(--blue);
-      background: rgba(0, 87, 255, .12);
-    }
-
-    .option-key {
-      width: 28px;
-      height: 28px;
-      border-radius: 6px;
-      border: 1px solid rgba(255, 255, 255, .15);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'Geist Mono', monospace;
-      font-size: 11px;
-      font-weight: 600;
-      color: #555;
-      flex-shrink: 0;
-      transition: all .2s;
-    }
-
-    .option.selected .option-key {
-      background: var(--blue);
-      border-color: var(--blue);
-      color: var(--white);
-    }
-
-    .option-text {
-      font-size: 15px;
-      font-weight: 500;
-      color: rgba(255, 255, 255, .8);
-    }
-
-    .option.selected .option-text {
-      color: var(--white);
-    }
-
-    /* ── SCALE QUESTION ── */
-    .scale-options {
-      display: flex;
-      gap: 8px;
-      width: 100%;
-      max-width: 480px;
-    }
-
-    .scale-btn {
-      flex: 1;
-      aspect-ratio: 1;
-      border: 1px solid rgba(255, 255, 255, .08);
-      border-radius: 10px;
-      background: rgba(255, 255, 255, .03);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all .2s;
-      gap: 4px;
-    }
-
-    .scale-btn:hover {
-      border-color: rgba(255, 255, 255, .2);
-      background: rgba(255, 255, 255, .06);
-    }
-
-    .scale-btn.selected {
-      border-color: var(--blue);
-      background: rgba(0, 87, 255, .15);
-    }
-
-    .scale-num {
-      font-family: 'Geist Mono', monospace;
-      font-size: 20px;
-      font-weight: 700;
-      color: rgba(255, 255, 255, .5);
-      transition: color .2s;
-    }
-
-    .scale-btn.selected .scale-num {
-      color: var(--white);
-    }
-
-    .scale-btn.selected.s1 .scale-num {
-      color: var(--red);
-    }
-
-    .scale-btn.selected.s2 .scale-num {
-      color: #FF8C00;
-    }
-
-    .scale-btn.selected.s3 .scale-num {
-      color: var(--blue);
-    }
-
-    .scale-btn.selected.s4 .scale-num {
-      color: #7B61FF;
-    }
-
-    .scale-btn.selected.s5 .scale-num {
-      color: var(--green);
-    }
-
-    .scale-label-row {
-      display: flex;
-      justify-content: space-between;
-      width: 100%;
-      max-width: 480px;
-      margin-top: 8px;
-    }
-
-    .scale-label-row span {
-      font-size: 11px;
-      color: #444;
-    }
-
-    /* ── TEXT INPUT ── */
-    .text-input-wrap {
-      width: 100%;
-      max-width: 480px;
-      position: relative;
-    }
-
-    .text-input {
-      width: 100%;
-      background: transparent;
-      border: none;
-      border-bottom: 2px solid rgba(255, 255, 255, .15);
-      color: var(--white);
-      font-family: 'Geist', sans-serif;
-      font-size: 24px;
-      font-weight: 600;
-      padding: 12px 0;
-      outline: none;
-      letter-spacing: -.02em;
-      transition: border-color .2s;
-      text-align: center;
-    }
-
-    .text-input:focus {
-      border-bottom-color: var(--blue);
-    }
-
-    .text-input::placeholder {
-      color: #333;
-    }
-
-    .email-input {
-      font-size: 20px;
-      text-align: left;
-    }
-
-    /* ── HIGHLIGHT ── */
-    .highlight {
-      color: var(--blue);
-    }
-
-    .highlight-green {
-      color: var(--green);
-    }
-
-    /* ── CTA BUTTON ── */
-    .cta-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      background: var(--blue);
-      color: var(--white);
-      padding: 14px 28px;
-      border-radius: 10px;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-      border: none;
-      transition: all .2s;
-      letter-spacing: -.01em;
-      font-family: 'Geist', sans-serif;
-    }
-
-    .cta-btn:hover {
-      background: #0047DD;
-      transform: translateY(-1px);
-    }
-
-    .cta-btn:active {
-      transform: translateY(0);
-    }
-
-    .cta-btn.large {
-      padding: 18px 36px;
-      font-size: 17px;
-      border-radius: 12px;
-    }
-
-    .cta-btn.white {
-      background: var(--white);
-      color: var(--black);
-    }
-
-    .cta-btn.white:hover {
-      background: #F0F0F0;
-    }
-
-    .cta-secondary {
-      font-size: 13px;
-      color: #444;
-      cursor: pointer;
-      margin-top: 16px;
-      background: none;
-      border: none;
-      font-family: 'Geist', sans-serif;
-      transition: color .2s;
-    }
-
-    .cta-secondary:hover {
-      color: #666;
-    }
-
-    /* ── BACK BUTTON ── */
-    .back-btn {
-      position: fixed;
-      bottom: 32px;
-      left: 32px;
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      font-size: 12px;
-      color: #333;
-      background: none;
-      border: none;
-      font-family: 'Geist', sans-serif;
-      cursor: pointer;
-      transition: color .2s;
-      z-index: 99;
-    }
-
-    .back-btn:hover {
-      color: #666;
-    }
-
-    .back-btn svg {
-      transition: transform .2s;
-    }
-
-    .back-btn:hover svg {
-      transform: translateX(-3px);
-    }
-
-    /* ── CONTINUE HINT ── */
-    .continue-hint {
-      position: fixed;
-      bottom: 32px;
-      left: 0;
-      right: 0;
-      text-align: center;
-      font-size: 11px;
-      color: #333;
-      letter-spacing: .06em;
-    }
-
-    /* ── FINAL / THANK YOU ── */
-    .final-icon {
-      width: 72px;
-      height: 72px;
-      border-radius: 18px;
-      background: rgba(0, 184, 122, .15);
-      border: 1px solid rgba(0, 184, 122, .3);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 28px;
-      font-size: 32px;
-    }
-
-    .final-title {
-      font-size: clamp(28px, 5vw, 48px);
-      font-weight: 900;
-      letter-spacing: -.04em;
-      line-height: 1.05;
-      margin-bottom: 16px;
-      max-width: 520px;
-    }
-
-    .final-sub {
-      font-size: 16px;
-      color: #555;
-      max-width: 400px;
-      line-height: 1.65;
-      margin-bottom: 36px;
-    }
-
-    .final-pills {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content: center;
-      margin-bottom: 36px;
-    }
-
-    .pill {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 14px;
-      border-radius: 20px;
-      border: 1px solid rgba(255, 255, 255, .1);
-      font-size: 12px;
-      color: #555;
-    }
-
-    .pill-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    /* ── SAVINGS CALLOUT ── */
-    .savings-callout {
-      padding: 20px 28px;
-      border: 1px solid rgba(0, 87, 255, .3);
-      border-radius: 10px;
-      background: rgba(0, 87, 255, .08);
-      max-width: 420px;
-      width: 100%;
-      margin: 24px 0;
-      text-align: left;
-    }
-
-    .sc-label {
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: .14em;
-      text-transform: uppercase;
-      color: var(--blue);
-      margin-bottom: 8px;
-    }
-
-    .sc-text {
-      font-size: 14px;
-      color: #888;
-      line-height: 1.6;
-    }
-
-    .sc-number {
-      font-family: 'Geist Mono', monospace;
-      font-size: 32px;
-      font-weight: 700;
-      color: var(--white);
-      margin: 4px 0;
-    }
-
-    /* ── ANIMATIONS ── */
-    @keyframes fadeUp {
-      from {
-        opacity: 0;
-        transform: translateY(16px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .screen.active>* {
-      animation: fadeUp .5s cubic-bezier(.4, 0, .2, 1) both;
-    }
-
-    .screen.active>*:nth-child(1) {
-      animation-delay: .05s;
-    }
-
-    .screen.active>*:nth-child(2) {
-      animation-delay: .12s;
-    }
-
-    .screen.active>*:nth-child(3) {
-      animation-delay: .18s;
-    }
-
-    .screen.active>*:nth-child(4) {
-      animation-delay: .24s;
-    }
-
-    .screen.active>*:nth-child(5) {
-      animation-delay: .30s;
-    }
-
-    .screen.active>*:nth-child(6) {
-      animation-delay: .36s;
-    }
-
-    /* ── RESULT DYNAMIC ── */
-    #dynamic-result {
-      transition: all .3s;
-    }
-
-    @media (max-width: 600px) {
-      .scale-options {
-        gap: 5px;
-      }
-
-      .scale-num {
-        font-size: 16px;
-      }
-
-      .intro-meta {
-        flex-direction: column;
-        gap: 10px;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>snip — ¿Cuánto estás perdiendo al mes?</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --black:  #0C0C0C;
+  --blue:   #0057FF;
+  --white:  #FFFFFF;
+  --fog:    #F5F5F3;
+  --rule:   #E8E8E5;
+  --mid:    #5A5A5A;
+  --light:  #9A9A9A;
+  --green:  #00B87A;
+  --red:    #FF3B30;
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Geist', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  background: var(--black);
+  color: var(--white);
+  overflow: hidden;
+}
+
+/* ── PROGRESS BAR ── */
+.progress-bar {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: 2px; background: rgba(255,255,255,.08);
+  z-index: 100;
+}
+.progress-fill {
+  height: 100%; background: var(--blue);
+  transition: width .5s cubic-bezier(.4,0,.2,1);
+  width: 0%;
+}
+
+/* ── TOP NAV ── */
+.top-nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  padding: 20px 32px;
+  display: flex; justify-content: space-between; align-items: center;
+  z-index: 99;
+}
+
+.nav-logo { display: flex; align-items: center; gap: 10px; }
+.nav-logo-icon {
+  width: 28px; height: 28px; border-radius: 7px;
+  background: var(--white);
+  display: flex; align-items: center; justify-content: center;
+}
+.nav-logo-word {
+  font-size: 15px; font-weight: 900;
+  letter-spacing: -.04em; color: var(--white);
+}
+.nav-step {
+  font-family: 'Geist Mono', monospace;
+  font-size: 11px; color: #444;
+  letter-spacing: .06em;
+}
+
+/* ── SCREENS ── */
+.screens {
+  position: fixed; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.screen {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 80px 32px 40px;
+  opacity: 0;
+  transform: translateY(32px);
+  pointer-events: none;
+  transition: opacity .45s cubic-bezier(.4,0,.2,1), transform .45s cubic-bezier(.4,0,.2,1);
+  text-align: center;
+}
+
+.screen.active {
+  opacity: 1; transform: translateY(0);
+  pointer-events: all;
+}
+
+.screen.exit-up {
+  opacity: 0; transform: translateY(-32px);
+  pointer-events: none;
+}
+
+/* ── INTRO SCREEN ── */
+.intro-eyebrow {
+  font-size: 11px; font-weight: 600;
+  letter-spacing: .18em; text-transform: uppercase;
+  color: var(--blue); margin-bottom: 24px;
+}
+
+.intro-title {
+  font-size: clamp(36px, 7vw, 72px);
+  font-weight: 900; letter-spacing: -.04em;
+  line-height: .95; margin-bottom: 24px;
+  max-width: 680px;
+}
+
+.intro-title .cut {
+  position: relative; display: inline-block;
+  color: var(--white);
+}
+
+.intro-title .dim { color: rgba(255,255,255,.25); }
+
+.intro-sub {
+  font-size: 17px; font-weight: 400;
+  color: #666; max-width: 420px;
+  line-height: 1.6; margin-bottom: 40px;
+}
+
+.intro-meta {
+  display: flex; align-items: center; gap: 24px;
+  margin-bottom: 48px;
+}
+
+.intro-meta-item {
+  display: flex; align-items: center; gap: 7px;
+  font-size: 12px; color: #444;
+}
+
+.intro-meta-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--blue); flex-shrink: 0;
+}
+
+/* ── QUESTION SCREENS ── */
+.q-label {
+  font-size: 10px; font-weight: 600;
+  letter-spacing: .2em; text-transform: uppercase;
+  color: var(--blue); margin-bottom: 20px;
+}
+
+.q-text {
+  font-size: clamp(22px, 4vw, 38px);
+  font-weight: 800; letter-spacing: -.03em;
+  line-height: 1.1; margin-bottom: 12px;
+  max-width: 600px;
+}
+
+.q-sub {
+  font-size: 14px; color: #555;
+  margin-bottom: 40px; max-width: 440px;
+  line-height: 1.6;
+}
+
+/* ── OPTIONS ── */
+.options {
+  display: flex; flex-direction: column;
+  gap: 10px; width: 100%; max-width: 480px;
+}
+
+.option {
+  display: flex; align-items: center; gap: 16px;
+  padding: 16px 20px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all .2s;
+  text-align: left;
+  background: rgba(255,255,255,.03);
+}
+
+.option:hover {
+  border-color: rgba(255,255,255,.2);
+  background: rgba(255,255,255,.06);
+}
+
+.option.selected {
+  border-color: var(--blue);
+  background: rgba(0,87,255,.12);
+}
+
+.option-key {
+  width: 28px; height: 28px; border-radius: 6px;
+  border: 1px solid rgba(255,255,255,.15);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Geist Mono', monospace;
+  font-size: 11px; font-weight: 600; color: #555;
+  flex-shrink: 0; transition: all .2s;
+}
+
+.option.selected .option-key {
+  background: var(--blue); border-color: var(--blue);
+  color: var(--white);
+}
+
+.option-text {
+  font-size: 15px; font-weight: 500; color: rgba(255,255,255,.8);
+}
+
+.option.selected .option-text { color: var(--white); }
+
+/* ── SCALE QUESTION ── */
+.scale-options {
+  display: flex; gap: 8px;
+  width: 100%; max-width: 480px;
+}
+
+.scale-btn {
+  flex: 1; aspect-ratio: 1;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 10px;
+  background: rgba(255,255,255,.03);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  cursor: pointer; transition: all .2s; gap: 4px;
+}
+
+.scale-btn:hover {
+  border-color: rgba(255,255,255,.2);
+  background: rgba(255,255,255,.06);
+}
+
+.scale-btn.selected {
+  border-color: var(--blue);
+  background: rgba(0,87,255,.15);
+}
+
+.scale-num {
+  font-family: 'Geist Mono', monospace;
+  font-size: 20px; font-weight: 700;
+  color: rgba(255,255,255,.5);
+  transition: color .2s;
+}
+
+.scale-btn.selected .scale-num { color: var(--white); }
+.scale-btn.selected.s1 .scale-num { color: var(--red); }
+.scale-btn.selected.s2 .scale-num { color: #FF8C00; }
+.scale-btn.selected.s3 .scale-num { color: var(--blue); }
+.scale-btn.selected.s4 .scale-num { color: #7B61FF; }
+.scale-btn.selected.s5 .scale-num { color: var(--green); }
+
+.scale-label-row {
+  display: flex; justify-content: space-between;
+  width: 100%; max-width: 480px;
+  margin-top: 8px;
+}
+.scale-label-row span { font-size: 11px; color: #444; }
+
+/* ── TEXT INPUT ── */
+.text-input-wrap {
+  width: 100%; max-width: 480px;
+  position: relative;
+}
+
+.text-input {
+  width: 100%;
+  background: transparent;
+  border: none; border-bottom: 2px solid rgba(255,255,255,.15);
+  color: var(--white);
+  font-family: 'Geist', sans-serif;
+  font-size: 24px; font-weight: 600;
+  padding: 12px 0;
+  outline: none;
+  letter-spacing: -.02em;
+  transition: border-color .2s;
+  text-align: center;
+}
+
+.text-input:focus { border-bottom-color: var(--blue); }
+.text-input::placeholder { color: #333; }
+
+.email-input {
+  font-size: 20px;
+  text-align: left;
+}
+
+/* ── HIGHLIGHT ── */
+.highlight { color: var(--blue); }
+.highlight-green { color: var(--green); }
+
+/* ── CTA BUTTON ── */
+.cta-btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: var(--blue); color: var(--white);
+  padding: 14px 28px; border-radius: 10px;
+  font-size: 15px; font-weight: 700;
+  cursor: pointer; border: none;
+  transition: all .2s; letter-spacing: -.01em;
+  font-family: 'Geist', sans-serif;
+}
+
+.cta-btn:hover { background: #0047DD; transform: translateY(-1px); }
+.cta-btn:active { transform: translateY(0); }
+
+.cta-btn.large {
+  padding: 18px 36px; font-size: 17px;
+  border-radius: 12px;
+}
+
+.cta-btn.white {
+  background: var(--white); color: var(--black);
+}
+.cta-btn.white:hover { background: #F0F0F0; }
+
+.cta-secondary {
+  font-size: 13px; color: #444; cursor: pointer;
+  margin-top: 16px; background: none; border: none;
+  font-family: 'Geist', sans-serif;
+  transition: color .2s;
+}
+.cta-secondary:hover { color: #666; }
+
+/* ── BACK BUTTON ── */
+.back-btn {
+  position: fixed; bottom: 32px; left: 32px;
+  display: flex; align-items: center; gap: 7px;
+  font-size: 12px; color: #333;
+  background: none; border: none;
+  font-family: 'Geist', sans-serif;
+  cursor: pointer; transition: color .2s;
+  z-index: 99;
+}
+.back-btn:hover { color: #666; }
+.back-btn svg { transition: transform .2s; }
+.back-btn:hover svg { transform: translateX(-3px); }
+
+/* ── CONTINUE HINT ── */
+.continue-hint {
+  position: fixed; bottom: 32px; left: 0; right: 0;
+  text-align: center;
+  font-size: 11px; color: #333;
+  letter-spacing: .06em;
+}
+
+/* ── FINAL / THANK YOU ── */
+.final-icon {
+  width: 72px; height: 72px; border-radius: 18px;
+  background: rgba(0,184,122,.15);
+  border: 1px solid rgba(0,184,122,.3);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 28px; font-size: 32px;
+}
+
+.final-title {
+  font-size: clamp(28px, 5vw, 48px);
+  font-weight: 900; letter-spacing: -.04em;
+  line-height: 1.05; margin-bottom: 16px;
+  max-width: 520px;
+}
+
+.final-sub {
+  font-size: 16px; color: #555;
+  max-width: 400px; line-height: 1.65;
+  margin-bottom: 36px;
+}
+
+.final-pills {
+  display: flex; gap: 10px; flex-wrap: wrap;
+  justify-content: center; margin-bottom: 36px;
+}
+
+.pill {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 14px; border-radius: 20px;
+  border: 1px solid rgba(255,255,255,.1);
+  font-size: 12px; color: #555;
+}
+.pill-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+/* ── SAVINGS CALLOUT ── */
+.savings-callout {
+  padding: 20px 28px;
+  border: 1px solid rgba(0,87,255,.3);
+  border-radius: 10px;
+  background: rgba(0,87,255,.08);
+  max-width: 420px; width: 100%;
+  margin: 24px 0;
+  text-align: left;
+}
+.sc-label { font-size: 10px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--blue); margin-bottom: 8px; }
+.sc-text { font-size: 14px; color: #888; line-height: 1.6; }
+.sc-number { font-family: 'Geist Mono', monospace; font-size: 32px; font-weight: 700; color: var(--white); margin: 4px 0; }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.screen.active > * {
+  animation: fadeUp .5s cubic-bezier(.4,0,.2,1) both;
+}
+.screen.active > *:nth-child(1) { animation-delay: .05s; }
+.screen.active > *:nth-child(2) { animation-delay: .12s; }
+.screen.active > *:nth-child(3) { animation-delay: .18s; }
+.screen.active > *:nth-child(4) { animation-delay: .24s; }
+.screen.active > *:nth-child(5) { animation-delay: .30s; }
+.screen.active > *:nth-child(6) { animation-delay: .36s; }
+
+/* ── RESULT DYNAMIC ── */
+#dynamic-result { transition: all .3s; }
+
+@media (max-width: 600px) {
+  .scale-options { gap: 5px; }
+  .scale-num { font-size: 16px; }
+  .intro-meta { flex-direction: column; gap: 10px; }
+}
+</style>
 </head>
-
 <body>
 
-  <!-- Progress -->
-  <!-- Netlify Forms: hidden form for bot detection at build time -->
-  <form name="snip-waitlist" netlify netlify-honeypot="bot-field" hidden>
-    <input type="hidden" name="form-name" value="snip-waitlist" />
-    <input name="bot-field" />
-    <input type="email" name="email" />
-    <input type="text" name="suscripciones" />
-    <input type="text" name="conoce_total" />
-    <input type="text" name="pagos_olvidados" />
-    <input type="text" name="cancelacion" />
-    <input type="text" name="molestia" />
-    <input type="text" name="precio" />
-    <input type="text" name="ahorro_estimado" />
-  </form>
+<!-- Progress -->
+<div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
 
-  <div class="progress-bar">
-    <div class="progress-fill" id="progress"></div>
-  </div>
-
-  <!-- Top nav -->
-  <div class="top-nav">
-    <div class="nav-logo">
-      <div class="nav-logo-icon">
-        <svg width="16" height="16" viewBox="0 0 72 72" fill="none">
-          <path
-            d="M48 22C43 17 36 17 36 17C27.5 17 23 22 23 28C23 34 27.5 37 36 38.5C44.5 40 49 43 49 49C49 55 44.5 59 36 59C28.5 59 23 54 23 54"
-            stroke="#0C0C0C" stroke-width="6" stroke-linecap="round" />
-          <line x1="10" y1="44" x2="62" y2="28" stroke="#0057FF" stroke-width="5.5" stroke-linecap="round" />
-        </svg>
-      </div>
-      <span class="nav-logo-word">snip</span>
+<!-- Top nav -->
+<div class="top-nav">
+  <div class="nav-logo">
+    <div class="nav-logo-icon">
+      <svg width="16" height="16" viewBox="0 0 72 72" fill="none">
+        <path d="M48 22C43 17 36 17 36 17C27.5 17 23 22 23 28C23 34 27.5 37 36 38.5C44.5 40 49 43 49 49C49 55 44.5 59 36 59C28.5 59 23 54 23 54" stroke="#0C0C0C" stroke-width="6" stroke-linecap="round"/>
+        <line x1="10" y1="44" x2="62" y2="28" stroke="#0057FF" stroke-width="5.5" stroke-linecap="round"/>
+      </svg>
     </div>
-    <div class="nav-step" id="nav-step"></div>
+    <span class="nav-logo-word">snip</span>
+  </div>
+  <div class="nav-step" id="nav-step"></div>
+</div>
+
+<!-- ═══ SCREENS ═══════════════════════════════════════════════════════ -->
+<div class="screens">
+
+  <!-- SCREEN 0: INTRO -->
+  <div class="screen active" id="screen-0">
+    <div class="intro-eyebrow">Acceso anticipado · Versión alfa</div>
+    <div class="intro-title">
+      ¿Cuánto dinero<br>
+      <span class="dim">estás perdiendo</span><br>
+      en suscripciones?
+    </div>
+    <div class="intro-sub">
+      3 minutos. 7 preguntas. Te diremos exactamente cuánto puedes recuperar — y serás el primero en usar snip cuando esté listo.
+    </div>
+    <div class="intro-meta">
+      <div class="intro-meta-item">
+        <div class="intro-meta-dot"></div>
+        <span>7 preguntas rápidas</span>
+      </div>
+      <div class="intro-meta-item">
+        <div class="intro-meta-dot"></div>
+        <span>Sin spam, nunca</span>
+      </div>
+      <div class="intro-meta-item">
+        <div class="intro-meta-dot"></div>
+        <span>Acceso alfa prioritario</span>
+      </div>
+    </div>
+    <button class="cta-btn large" onclick="nextScreen()">
+      Descubrir cuánto pierdo →
+    </button>
   </div>
 
-  <!-- ═══ SCREENS ═══════════════════════════════════════════════════════ -->
-  <div class="screens">
+  <!-- SCREEN 1: ¿Cuántas suscripciones? (activa el dolor) -->
+  <div class="screen" id="screen-1">
+    <div class="q-label">Pregunta 1 de 7</div>
+    <div class="q-text">Piensa un momento... ¿cuántas suscripciones activas crees que tienes ahora mismo?</div>
+    <div class="q-sub">Incluye todo: streaming, apps, gimnasio, software, prensa digital, almacenamiento en la nube...</div>
+    <div class="options">
+      <div class="option" onclick="selectOption(this, 1, 'Menos de 5')">
+        <div class="option-key">A</div>
+        <div class="option-text">Menos de 5 — tengo pocas</div>
+      </div>
+      <div class="option" onclick="selectOption(this, 1, 'Entre 5 y 10')">
+        <div class="option-key">B</div>
+        <div class="option-text">Entre 5 y 10 — las tengo controladas</div>
+      </div>
+      <div class="option" onclick="selectOption(this, 1, 'Entre 10 y 15')">
+        <div class="option-key">C</div>
+        <div class="option-text">Entre 10 y 15 — más de las que debería</div>
+      </div>
+      <div class="option" onclick="selectOption(this, 1, 'Más de 15')">
+        <div class="option-key">D</div>
+        <div class="option-text">Más de 15 — honestamente, no sé</div>
+      </div>
+    </div>
+  </div>
 
-    <!-- SCREEN 0: INTRO -->
-    <div class="screen active" id="screen-0">
-      <div class="intro-eyebrow">Acceso anticipado · Versión alfa</div>
-      <div class="intro-title">
-        ¿Cuánto dinero<br>
-        <span class="dim">estás perdiendo</span><br>
-        en suscripciones?
+  <!-- SCREEN 2: ¿Sabes el total? (crea conciencia del problema) -->
+  <div class="screen" id="screen-2">
+    <div class="q-label">Pregunta 2 de 7</div>
+    <div class="q-text">Sin mirar el banco... ¿sabes exactamente cuánto pagas al mes en total por todas tus suscripciones?</div>
+    <div class="q-sub">Sé honesto/a. La mayoría de personas se equivocan por mucho.</div>
+    <div class="options">
+      <div class="option" onclick="selectOption(this, 2, 'Sí, al céntimo')">
+        <div class="option-key">A</div>
+        <div class="option-text">Sí, lo sé al céntimo</div>
       </div>
-      <div class="intro-sub">
-        3 minutos. 7 preguntas. Te diremos exactamente cuánto puedes recuperar — y serás el primero en usar snip cuando
-        esté listo.
+      <div class="option" onclick="selectOption(this, 2, 'Más o menos')">
+        <div class="option-key">B</div>
+        <div class="option-text">Más o menos... con un margen amplio</div>
       </div>
-      <div class="intro-meta">
-        <div class="intro-meta-item">
-          <div class="intro-meta-dot"></div>
-          <span>7 preguntas rápidas</span>
-        </div>
-        <div class="intro-meta-item">
-          <div class="intro-meta-dot"></div>
-          <span>Sin spam, nunca</span>
-        </div>
-        <div class="intro-meta-item">
-          <div class="intro-meta-dot"></div>
-          <span>Acceso alfa prioritario</span>
-        </div>
+      <div class="option" onclick="selectOption(this, 2, 'Tengo una idea vaga')">
+        <div class="option-key">C</div>
+        <div class="option-text">Tengo una idea vaga, pero no estoy seguro/a</div>
       </div>
-      <button class="cta-btn large" onclick="nextScreen()">
-        Descubrir cuánto pierdo →
+      <div class="option" onclick="selectOption(this, 2, 'No tengo ni idea')">
+        <div class="option-key">D</div>
+        <div class="option-text">No tengo ni idea, la verdad</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN 3: ¿Alguna vez pagaste sin usar? (agita el dolor) -->
+  <div class="screen" id="screen-3">
+    <div class="q-label">Pregunta 3 de 7</div>
+    <div class="q-text">¿Alguna vez has descubierto que llevas meses pagando por algo que no usas?</div>
+    <div class="q-sub">Ese momento en el que revisas el extracto y piensas "¿esto qué es?".</div>
+    <div class="options">
+      <div class="option" onclick="selectOption(this, 3, 'Sí, muchas veces')">
+        <div class="option-key">A</div>
+        <div class="option-text">Sí, me ha pasado varias veces</div>
+      </div>
+      <div class="option" onclick="selectOption(this, 3, 'Sí, alguna vez')">
+        <div class="option-key">B</div>
+        <div class="option-text">Sí, alguna vez me ha sorprendido un cargo</div>
+      </div>
+      <div class="option" onclick="selectOption(this, 3, 'Probablemente sí')">
+        <div class="option-key">C</div>
+        <div class="option-text">Probablemente sí, pero no lo reviso</div>
+      </div>
+      <div class="option" onclick="selectOption(this, 3, 'No, lo controlo')">
+        <div class="option-key">D</div>
+        <div class="option-text">No, tengo todo controlado</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN 4: ¿Has intentado cancelar? (expone la fricción) -->
+  <div class="screen" id="screen-4">
+    <div class="q-label">Pregunta 4 de 7</div>
+    <div class="q-text">Cuando has querido cancelar una suscripción... ¿qué ha pasado?</div>
+    <div class="q-sub">El proceso de cancelación es famoso por ser intencionalmente complicado.</div>
+    <div class="options">
+      <div class="option" onclick="selectOption(this, 4, 'Lo dejé para luego')">
+        <div class="option-key">A</div>
+        <div class="option-text">Lo intenté, no encontré cómo y lo dejé para luego</div>
+      </div>
+      <div class="option" onclick="selectOption(this, 4, 'Fue un laberinto')">
+        <div class="option-key">B</div>
+        <div class="option-text">Fue un laberinto de pantallas y al final me rendí</div>
+      </div>
+      <div class="option" onclick="selectOption(this, 4, 'Lo cancelé pero tardé')">
+        <div class="option-key">C</div>
+        <div class="option-text">Conseguí cancelarlo pero me llevó demasiado tiempo</div>
+      </div>
+      <div class="option" onclick="selectOption(this, 4, 'Sin problemas')">
+        <div class="option-key">D</div>
+        <div class="option-text">Sin problemas, lo hago sin dificultad</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN 5: Valoración del dolor (cuantifica disposición) -->
+  <div class="screen" id="screen-5">
+    <div class="q-label">Pregunta 5 de 7</div>
+    <div class="q-text">Del 1 al 5, ¿cuánto te molesta saber que estás pagando por cosas que no usas?</div>
+    <div class="q-sub">1 = me da igual, 5 = me parece un robo absoluto</div>
+    <div class="scale-options">
+      <div class="scale-btn s1" onclick="selectScale(this, 5, 1)"><div class="scale-num">1</div></div>
+      <div class="scale-btn s2" onclick="selectScale(this, 5, 2)"><div class="scale-num">2</div></div>
+      <div class="scale-btn s3" onclick="selectScale(this, 5, 3)"><div class="scale-num">3</div></div>
+      <div class="scale-btn s4" onclick="selectScale(this, 5, 4)"><div class="scale-num">4</div></div>
+      <div class="scale-btn s5" onclick="selectScale(this, 5, 5)"><div class="scale-num">5</div></div>
+    </div>
+    <div class="scale-label-row" style="max-width:480px;width:100%;">
+      <span>Me da igual</span>
+      <span>Me parece un robo</span>
+    </div>
+  </div>
+
+  <!-- SCREEN 6: ¿Pagarías? (la pregunta de validación real) -->
+  <div class="screen" id="screen-6">
+    <div class="q-label">Pregunta 6 de 7</div>
+    <div class="q-text">Si una app te ayudase a ahorrar 30-50€/mes eliminando suscripciones que no usas... ¿cuánto pagarías por ella?</div>
+    <div class="q-sub">Recuerda: estarías recuperando mucho más de lo que pagas.</div>
+    <div class="options">
+      <div class="option" onclick="selectOption(this, 6, 'Nada, debería ser gratis')">
+        <div class="option-key">A</div>
+        <div class="option-text">Nada, debería ser gratis</div>
+      </div>
+      <div class="option" onclick="selectOption(this, 6, '1-3€/mes')">
+        <div class="option-key">B</div>
+        <div class="option-text">1-3€/mes — precio café</div>
+      </div>
+      <div class="option" onclick="selectOption(this, 6, '4-7€/mes')">
+        <div class="option-key">C</div>
+        <div class="option-text">4-7€/mes — tiene sentido</div>
+      </div>
+      <div class="option" onclick="selectOption(this, 6, '8-15€/mes')">
+        <div class="option-key">D</div>
+        <div class="option-text">8-15€/mes — si el ahorro lo justifica</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN 7: EMAIL CAPTURE (el cierre) -->
+  <div class="screen" id="screen-7">
+    <div class="q-label">Última pregunta — 7 de 7</div>
+    <div class="q-text">Estás a punto de ser parte de<br><span class="highlight">algo que cambia esto para siempre.</span></div>
+
+    <div class="savings-callout" id="dynamic-result">
+      <div class="sc-label">Tu estimación de ahorro</div>
+      <div class="sc-number" id="savings-number">40-80€</div>
+      <div class="sc-text">al mes recuperables con snip, basado en tus respuestas. Eso son <span id="yearly-savings">480-960€</span> al año que ahora mismo se van solos.</div>
+    </div>
+
+    <div class="q-sub" style="margin-bottom:20px;">Déjanos tu email. Serás el primero en acceder cuando abramos la alfa — y te contaremos exactamente cómo funciona antes de lanzar.</div>
+
+    <div class="text-input-wrap">
+      <input
+        type="email"
+        class="text-input email-input"
+        id="email-input"
+        placeholder="tu@email.com"
+        onkeydown="if(event.key==='Enter') submitEmail()"
+      />
+    </div>
+
+    <div style="margin-top:28px;display:flex;flex-direction:column;align-items:center;gap:12px;">
+      <button class="cta-btn large white" onclick="submitEmail()">
+        Quiero acceso a la alfa →
       </button>
-    </div>
-
-    <!-- SCREEN 1: ¿Cuántas suscripciones? (activa el dolor) -->
-    <div class="screen" id="screen-1">
-      <div class="q-label">Pregunta 1 de 7</div>
-      <div class="q-text">Piensa un momento... ¿cuántas suscripciones activas crees que tienes ahora mismo?</div>
-      <div class="q-sub">Incluye todo: streaming, apps, gimnasio, software, prensa digital, almacenamiento en la nube...
-      </div>
-      <div class="options">
-        <div class="option" onclick="selectOption(this, 1, 'Menos de 5')">
-          <div class="option-key">A</div>
-          <div class="option-text">Menos de 5 — tengo pocas</div>
-        </div>
-        <div class="option" onclick="selectOption(this, 1, 'Entre 5 y 10')">
-          <div class="option-key">B</div>
-          <div class="option-text">Entre 5 y 10 — las tengo controladas</div>
-        </div>
-        <div class="option" onclick="selectOption(this, 1, 'Entre 10 y 15')">
-          <div class="option-key">C</div>
-          <div class="option-text">Entre 10 y 15 — más de las que debería</div>
-        </div>
-        <div class="option" onclick="selectOption(this, 1, 'Más de 15')">
-          <div class="option-key">D</div>
-          <div class="option-text">Más de 15 — honestamente, no sé</div>
-        </div>
+      <div style="font-size:11px;color:#333;text-align:center;line-height:1.6;max-width:320px;">
+        Sin spam. Sin vender tu email a nadie. Solo te escribimos cuando snip esté listo.
       </div>
     </div>
-
-    <!-- SCREEN 2: ¿Sabes el total? (crea conciencia del problema) -->
-    <div class="screen" id="screen-2">
-      <div class="q-label">Pregunta 2 de 7</div>
-      <div class="q-text">Sin mirar el banco... ¿sabes exactamente cuánto pagas al mes en total por todas tus
-        suscripciones?</div>
-      <div class="q-sub">Sé honesto/a. La mayoría de personas se equivocan por mucho.</div>
-      <div class="options">
-        <div class="option" onclick="selectOption(this, 2, 'Sí, al céntimo')">
-          <div class="option-key">A</div>
-          <div class="option-text">Sí, lo sé al céntimo</div>
-        </div>
-        <div class="option" onclick="selectOption(this, 2, 'Más o menos')">
-          <div class="option-key">B</div>
-          <div class="option-text">Más o menos... con un margen amplio</div>
-        </div>
-        <div class="option" onclick="selectOption(this, 2, 'Tengo una idea vaga')">
-          <div class="option-key">C</div>
-          <div class="option-text">Tengo una idea vaga, pero no estoy seguro/a</div>
-        </div>
-        <div class="option" onclick="selectOption(this, 2, 'No tengo ni idea')">
-          <div class="option-key">D</div>
-          <div class="option-text">No tengo ni idea, la verdad</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- SCREEN 3: ¿Alguna vez pagaste sin usar? (agita el dolor) -->
-    <div class="screen" id="screen-3">
-      <div class="q-label">Pregunta 3 de 7</div>
-      <div class="q-text">¿Alguna vez has descubierto que llevas meses pagando por algo que no usas?</div>
-      <div class="q-sub">Ese momento en el que revisas el extracto y piensas "¿esto qué es?".</div>
-      <div class="options">
-        <div class="option" onclick="selectOption(this, 3, 'Sí, muchas veces')">
-          <div class="option-key">A</div>
-          <div class="option-text">Sí, me ha pasado varias veces</div>
-        </div>
-        <div class="option" onclick="selectOption(this, 3, 'Sí, alguna vez')">
-          <div class="option-key">B</div>
-          <div class="option-text">Sí, alguna vez me ha sorprendido un cargo</div>
-        </div>
-        <div class="option" onclick="selectOption(this, 3, 'Probablemente sí')">
-          <div class="option-key">C</div>
-          <div class="option-text">Probablemente sí, pero no lo reviso</div>
-        </div>
-        <div class="option" onclick="selectOption(this, 3, 'No, lo controlo')">
-          <div class="option-key">D</div>
-          <div class="option-text">No, tengo todo controlado</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- SCREEN 4: ¿Has intentado cancelar? (expone la fricción) -->
-    <div class="screen" id="screen-4">
-      <div class="q-label">Pregunta 4 de 7</div>
-      <div class="q-text">Cuando has querido cancelar una suscripción... ¿qué ha pasado?</div>
-      <div class="q-sub">El proceso de cancelación es famoso por ser intencionalmente complicado.</div>
-      <div class="options">
-        <div class="option" onclick="selectOption(this, 4, 'Lo dejé para luego')">
-          <div class="option-key">A</div>
-          <div class="option-text">Lo intenté, no encontré cómo y lo dejé para luego</div>
-        </div>
-        <div class="option" onclick="selectOption(this, 4, 'Fue un laberinto')">
-          <div class="option-key">B</div>
-          <div class="option-text">Fue un laberinto de pantallas y al final me rendí</div>
-        </div>
-        <div class="option" onclick="selectOption(this, 4, 'Lo cancelé pero tardé')">
-          <div class="option-key">C</div>
-          <div class="option-text">Conseguí cancelarlo pero me llevó demasiado tiempo</div>
-        </div>
-        <div class="option" onclick="selectOption(this, 4, 'Sin problemas')">
-          <div class="option-key">D</div>
-          <div class="option-text">Sin problemas, lo hago sin dificultad</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- SCREEN 5: Valoración del dolor (cuantifica disposición) -->
-    <div class="screen" id="screen-5">
-      <div class="q-label">Pregunta 5 de 7</div>
-      <div class="q-text">Del 1 al 5, ¿cuánto te molesta saber que estás pagando por cosas que no usas?</div>
-      <div class="q-sub">1 = me da igual, 5 = me parece un robo absoluto</div>
-      <div class="scale-options">
-        <div class="scale-btn s1" onclick="selectScale(this, 5, 1)">
-          <div class="scale-num">1</div>
-        </div>
-        <div class="scale-btn s2" onclick="selectScale(this, 5, 2)">
-          <div class="scale-num">2</div>
-        </div>
-        <div class="scale-btn s3" onclick="selectScale(this, 5, 3)">
-          <div class="scale-num">3</div>
-        </div>
-        <div class="scale-btn s4" onclick="selectScale(this, 5, 4)">
-          <div class="scale-num">4</div>
-        </div>
-        <div class="scale-btn s5" onclick="selectScale(this, 5, 5)">
-          <div class="scale-num">5</div>
-        </div>
-      </div>
-      <div class="scale-label-row" style="max-width:480px;width:100%;">
-        <span>Me da igual</span>
-        <span>Me parece un robo</span>
-      </div>
-    </div>
-
-    <!-- SCREEN 6: ¿Pagarías? (la pregunta de validación real) -->
-    <div class="screen" id="screen-6">
-      <div class="q-label">Pregunta 6 de 7</div>
-      <div class="q-text">Si una app te ayudase a ahorrar 30-50€/mes eliminando suscripciones que no usas... ¿cuánto
-        pagarías por ella?</div>
-      <div class="q-sub">Recuerda: estarías recuperando mucho más de lo que pagas.</div>
-      <div class="options">
-        <div class="option" onclick="selectOption(this, 6, 'Nada, debería ser gratis')">
-          <div class="option-key">A</div>
-          <div class="option-text">Nada, debería ser gratis</div>
-        </div>
-        <div class="option" onclick="selectOption(this, 6, '1-3€/mes')">
-          <div class="option-key">B</div>
-          <div class="option-text">1-3€/mes — precio café</div>
-        </div>
-        <div class="option" onclick="selectOption(this, 6, '4-7€/mes')">
-          <div class="option-key">C</div>
-          <div class="option-text">4-7€/mes — tiene sentido</div>
-        </div>
-        <div class="option" onclick="selectOption(this, 6, '8-15€/mes')">
-          <div class="option-key">D</div>
-          <div class="option-text">8-15€/mes — si el ahorro lo justifica</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- SCREEN 7: EMAIL CAPTURE (el cierre) -->
-    <div class="screen" id="screen-7">
-      <div class="q-label">Última pregunta — 7 de 7</div>
-      <div class="q-text">Estás a punto de ser parte de<br><span class="highlight">algo que cambia esto para
-          siempre.</span></div>
-
-      <div class="savings-callout" id="dynamic-result">
-        <div class="sc-label">Tu estimación de ahorro</div>
-        <div class="sc-number" id="savings-number">40-80€</div>
-        <div class="sc-text">al mes recuperables con snip, basado en tus respuestas. Eso son <span
-            id="yearly-savings">480-960€</span> al año que ahora mismo se van solos.</div>
-      </div>
-
-      <div class="q-sub" style="margin-bottom:20px;">Déjanos tu email. Serás el primero en acceder cuando abramos la
-        alfa — y te contaremos exactamente cómo funciona antes de lanzar.</div>
-
-      <div class="text-input-wrap">
-        <input type="email" class="text-input email-input" id="email-input" placeholder="tu@email.com"
-          onkeydown="if(event.key==='Enter') submitEmail()" />
-      </div>
-
-      <div style="margin-top:28px;display:flex;flex-direction:column;align-items:center;gap:12px;">
-        <button class="cta-btn large white" onclick="submitEmail()">
-          Quiero acceso a la alfa →
-        </button>
-        <div style="font-size:11px;color:#333;text-align:center;line-height:1.6;max-width:320px;">
-          Sin spam. Sin vender tu email a nadie. Solo te escribimos cuando snip esté listo.
-        </div>
-      </div>
-    </div>
-
-    <!-- SCREEN 8: THANK YOU -->
-    <div class="screen" id="screen-8">
-      <div class="final-icon">✓</div>
-      <div class="final-title">
-        Ya estás dentro.<br>
-        <span class="highlight-green">Bien hecho.</span>
-      </div>
-      <div class="final-sub">
-        Eres parte del grupo fundador de snip. Te escribiremos antes que a nadie cuando abramos la alfa — y tu feedback
-        va a dar forma al producto.
-      </div>
-
-      <div class="final-pills">
-        <div class="pill">
-          <div class="pill-dot" style="background:var(--blue);"></div>
-          <span>Acceso alfa prioritario</span>
-        </div>
-        <div class="pill">
-          <div class="pill-dot" style="background:var(--green);"></div>
-          <span>Precio fundador</span>
-        </div>
-        <div class="pill">
-          <div class="pill-dot" style="background:#7B61FF;"></div>
-          <span>Influyes en el producto</span>
-        </div>
-      </div>
-
-      <div
-        style="padding:20px 28px;border:1px solid rgba(255,255,255,.08);border-radius:10px;max-width:420px;width:100%;text-align:left;background:rgba(255,255,255,.03);">
-        <div
-          style="font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--light);margin-bottom:8px;">
-          Mientras tanto</div>
-        <div style="font-size:13px;color:#666;line-height:1.7;">
-          Puedes ayudarnos compartiendo este link con alguien que también esté harto de pagar por suscripciones que no
-          usa. Cuanta más gente responda, mejor será el producto que construimos.
-        </div>
-      </div>
-
-      <button class="cta-btn" style="margin-top:28px;" onclick="copyLink()">
-        <span id="copy-btn-text">Compartir con alguien más</span>
-      </button>
-    </div>
-
   </div>
 
-  <!-- Continue hint -->
-  <div class="continue-hint" id="continue-hint" style="display:none;">
-    Pulsa <strong>Enter ↵</strong> para continuar
+  <!-- SCREEN 8: THANK YOU -->
+  <div class="screen" id="screen-8">
+    <div class="final-icon">✓</div>
+    <div class="final-title">
+      Ya estás dentro.<br>
+      <span class="highlight-green">Bien hecho.</span>
+    </div>
+    <div class="final-sub">
+      Eres parte del grupo fundador de snip. Te escribiremos antes que a nadie cuando abramos la alfa — y tu feedback va a dar forma al producto.
+    </div>
+
+    <div class="final-pills">
+      <div class="pill">
+        <div class="pill-dot" style="background:var(--blue);"></div>
+        <span>Acceso alfa prioritario</span>
+      </div>
+      <div class="pill">
+        <div class="pill-dot" style="background:var(--green);"></div>
+        <span>Precio fundador</span>
+      </div>
+      <div class="pill">
+        <div class="pill-dot" style="background:#7B61FF;"></div>
+        <span>Influyes en el producto</span>
+      </div>
+    </div>
+
+    <div style="padding:20px 28px;border:1px solid rgba(255,255,255,.08);border-radius:10px;max-width:420px;width:100%;text-align:left;background:rgba(255,255,255,.03);">
+      <div style="font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--light);margin-bottom:8px;">Mientras tanto</div>
+      <div style="font-size:13px;color:#666;line-height:1.7;">
+        Puedes ayudarnos compartiendo este link con alguien que también esté harto de pagar por suscripciones que no usa. Cuanta más gente responda, mejor será el producto que construimos.
+      </div>
+    </div>
+
+    <button class="cta-btn" style="margin-top:28px;" onclick="copyLink()">
+      <span id="copy-btn-text">Compartir con alguien más</span>
+    </button>
   </div>
 
-  <!-- Back button -->
-  <button class="back-btn" id="back-btn" style="display:none;" onclick="prevScreen()">
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-      <path d="M9 2L4 7L9 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
-    </svg>
-    Volver
-  </button>
+</div>
 
-  <script>
-    let currentScreen = 0;
-    const totalScreens = 9; // 0-8
-    const answers = {};
+<!-- Continue hint -->
+<div class="continue-hint" id="continue-hint" style="display:none;">
+  Pulsa <strong>Enter ↵</strong> para continuar
+</div>
 
-    // Progress calc
-    function updateProgress() {
-      const pct = (currentScreen / (totalScreens - 1)) * 100;
-      document.getElementById('progress').style.width = pct + '%';
+<!-- Back button -->
+<button class="back-btn" id="back-btn" style="display:none;" onclick="prevScreen()">
+  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+    <path d="M9 2L4 7L9 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+  Volver
+</button>
 
-      const navStep = document.getElementById('nav-step');
-      if (currentScreen === 0) {
-        navStep.textContent = '';
-      } else if (currentScreen < 8) {
-        navStep.textContent = currentScreen + ' / 7';
-      } else {
-        navStep.textContent = '✓ Completado';
-      }
+<script>
+  let currentScreen = 0;
+  const totalScreens = 9; // 0-8
+  const answers = {};
 
-      // Show back button on screens 1-7, hide on 0 and 8
-      const backBtn = document.getElementById('back-btn');
-      backBtn.style.display = (currentScreen >= 1 && currentScreen <= 7) ? 'flex' : 'none';
+  // Progress calc
+  function updateProgress() {
+    const pct = (currentScreen / (totalScreens - 1)) * 100;
+    document.getElementById('progress').style.width = pct + '%';
+
+    const navStep = document.getElementById('nav-step');
+    if (currentScreen === 0) {
+      navStep.textContent = '';
+    } else if (currentScreen < 8) {
+      navStep.textContent = currentScreen + ' / 7';
+    } else {
+      navStep.textContent = '✓ Completado';
     }
 
-    function prevScreen() {
-      if (currentScreen <= 0) return;
-      const current = document.getElementById('screen-' + currentScreen);
-      current.classList.remove('active');
+    // Show back button on screens 1-7, hide on 0 and 8
+    const backBtn = document.getElementById('back-btn');
+    backBtn.style.display = (currentScreen >= 1 && currentScreen <= 7) ? 'flex' : 'none';
+  }
 
-      // Slide back down
-      current.style.transition = 'opacity .35s ease, transform .35s ease';
-      current.style.opacity = '0';
-      current.style.transform = 'translateY(32px)';
+  function prevScreen() {
+    if (currentScreen <= 0) return;
+    const current = document.getElementById('screen-' + currentScreen);
+    current.classList.remove('active');
 
-      setTimeout(() => {
-        current.style.transition = '';
-        current.style.opacity = '';
-        current.style.transform = '';
-      }, 400);
+    // Slide back down
+    current.style.transition = 'opacity .35s ease, transform .35s ease';
+    current.style.opacity = '0';
+    current.style.transform = 'translateY(32px)';
 
-      currentScreen = currentScreen - 1;
-      const prev = document.getElementById('screen-' + currentScreen);
-      prev.style.opacity = '0';
-      prev.style.transform = 'translateY(-20px)';
-      prev.classList.add('active');
+    setTimeout(() => {
+      current.style.transition = '';
+      current.style.opacity = '';
+      current.style.transform = '';
+    }, 400);
 
+    currentScreen = currentScreen - 1;
+    const prev = document.getElementById('screen-' + currentScreen);
+    prev.style.opacity = '0';
+    prev.style.transform = 'translateY(-20px)';
+    prev.classList.add('active');
+
+    requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          prev.style.transition = 'opacity .35s ease, transform .35s ease';
-          prev.style.opacity = '1';
-          prev.style.transform = 'translateY(0)';
-          setTimeout(() => {
-            prev.style.transition = '';
-            prev.style.opacity = '';
-            prev.style.transform = '';
-          }, 400);
-        });
-      });
-
-      updateProgress();
-    }
-
-    function showScreen(n) {
-      const current = document.getElementById('screen-' + currentScreen);
-      current.classList.remove('active');
-      current.classList.add('exit-up');
-
-      setTimeout(() => {
-        current.classList.remove('exit-up');
-      }, 500);
-
-      currentScreen = n;
-      const next = document.getElementById('screen-' + currentScreen);
-      next.classList.add('active');
-      updateProgress();
-
-      document.getElementById('continue-hint').style.display = 'none';
-    }
-
-    function nextScreen() {
-      showScreen(currentScreen + 1);
-    }
-
-    // Option selection (single choice → auto advance)
-    function selectOption(el, screenNum, value) {
-      const opts = el.parentNode.querySelectorAll('.option');
-      opts.forEach(o => o.classList.remove('selected'));
-      el.classList.add('selected');
-      answers[screenNum] = value;
-
-      // Update dynamic savings estimate on last q before email
-      updateSavingsEstimate();
-
-      setTimeout(() => {
-        nextScreen();
-      }, 420);
-    }
-
-    // Scale selection
-    function selectScale(el, screenNum, value) {
-      const btns = el.parentNode.querySelectorAll('.scale-btn');
-      btns.forEach(b => b.classList.remove('selected'));
-      el.classList.add('selected');
-      answers[screenNum] = value;
-
-      updateSavingsEstimate();
-
-      setTimeout(() => {
-        nextScreen();
-      }, 420);
-    }
-
-    // Dynamic savings estimate based on answers
-    function updateSavingsEstimate() {
-      let base = 40;
-      let high = 80;
-
-      // More subs = more potential savings
-      if (answers[1] === 'Entre 5 y 10') { base = 30; high = 60; }
-      if (answers[1] === 'Entre 10 y 15') { base = 50; high = 100; }
-      if (answers[1] === 'Más de 15') { base = 70; high = 140; }
-
-      // Doesn't know total = more waste
-      if (answers[2] === 'No tengo ni idea') { base += 20; high += 30; }
-      if (answers[2] === 'Tengo una idea vaga') { base += 10; high += 15; }
-
-      // Paid without using = confirmed waste
-      if (answers[3] === 'Sí, muchas veces') { base += 15; high += 20; }
-
-      document.getElementById('savings-number').textContent = base + '-' + high + '€';
-      document.getElementById('yearly-savings').textContent =
-        (base * 12) + '-' + (high * 12) + '€';
-    }
-
-    // Email submit
-    function submitEmail() {
-      const email = document.getElementById('email-input').value.trim();
-      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-      if (!re.test(email)) {
-        const input = document.getElementById('email-input');
-        input.style.borderBottomColor = '#FF3B30';
-        input.placeholder = 'Introduce un email válido';
+        prev.style.transition = 'opacity .35s ease, transform .35s ease';
+        prev.style.opacity = '1';
+        prev.style.transform = 'translateY(0)';
         setTimeout(() => {
-          input.style.borderBottomColor = '';
-          input.placeholder = 'tu@email.com';
-        }, 2000);
-        return;
-      }
-
-      answers['email'] = email;
-
-      // Disable button to prevent double submit
-      const btn = document.querySelector('#screen-7 .cta-btn');
-      btn.textContent = 'Enviando...';
-      btn.style.opacity = '.6';
-      btn.style.pointerEvents = 'none';
-
-      // Build payload as URLSearchParams (Netlify Forms requiere este formato exacto)
-      const payload = new URLSearchParams({
-        'form-name': 'snip-waitlist',
-        'email': email,
-        'suscripciones': answers[1] || '',
-        'conoce_total': answers[2] || '',
-        'pagos_olvidados': answers[3] || '',
-        'cancelacion': answers[4] || '',
-        'molestia': String(answers[5] || ''),
-        'precio': answers[6] || '',
-        'ahorro_estimado': document.getElementById('savings-number').textContent
-      }).toString();
-
-      fetch('/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: payload
-      })
-        .then(res => {
-          if (res.ok) {
-            showScreen(8);
-          } else {
-            // Netlify returned an error — still show thank you but log it
-            console.error('Netlify Forms error:', res.status);
-            showScreen(8);
-          }
-        })
-        .catch(err => {
-          console.error('Fetch error:', err);
-          showScreen(8);
-        });
-    }
-
-    // Copy link
-    function copyLink() {
-      navigator.clipboard.writeText(window.location.href).then(() => {
-        document.getElementById('copy-btn-text').textContent = '¡Link copiado! ✓';
-        setTimeout(() => {
-          document.getElementById('copy-btn-text').textContent = 'Compartir con alguien más';
-        }, 2500);
-      }).catch(() => {
-        document.getElementById('copy-btn-text').textContent = '¡Link copiado! ✓';
+          prev.style.transition = '';
+          prev.style.opacity = '';
+          prev.style.transform = '';
+        }, 400);
       });
-    }
-
-    // Keyboard navigation
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        if (currentScreen === 0) nextScreen();
-        if (currentScreen === 7) submitEmail();
-      }
     });
 
     updateProgress();
-  </script>
+  }
+
+  function showScreen(n) {
+    const current = document.getElementById('screen-' + currentScreen);
+    current.classList.remove('active');
+    current.classList.add('exit-up');
+
+    setTimeout(() => {
+      current.classList.remove('exit-up');
+    }, 500);
+
+    currentScreen = n;
+    const next = document.getElementById('screen-' + currentScreen);
+    next.classList.add('active');
+    updateProgress();
+
+    document.getElementById('continue-hint').style.display = 'none';
+  }
+
+  function nextScreen() {
+    showScreen(currentScreen + 1);
+  }
+
+  // Option selection (single choice → auto advance)
+  function selectOption(el, screenNum, value) {
+    const opts = el.parentNode.querySelectorAll('.option');
+    opts.forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    answers[screenNum] = value;
+
+    // Update dynamic savings estimate on last q before email
+    updateSavingsEstimate();
+
+    setTimeout(() => {
+      nextScreen();
+    }, 420);
+  }
+
+  // Scale selection
+  function selectScale(el, screenNum, value) {
+    const btns = el.parentNode.querySelectorAll('.scale-btn');
+    btns.forEach(b => b.classList.remove('selected'));
+    el.classList.add('selected');
+    answers[screenNum] = value;
+
+    updateSavingsEstimate();
+
+    setTimeout(() => {
+      nextScreen();
+    }, 420);
+  }
+
+  // Dynamic savings estimate based on answers
+  function updateSavingsEstimate() {
+    let base = 40;
+    let high = 80;
+
+    // More subs = more potential savings
+    if (answers[1] === 'Entre 5 y 10') { base = 30; high = 60; }
+    if (answers[1] === 'Entre 10 y 15') { base = 50; high = 100; }
+    if (answers[1] === 'Más de 15') { base = 70; high = 140; }
+
+    // Doesn't know total = more waste
+    if (answers[2] === 'No tengo ni idea') { base += 20; high += 30; }
+    if (answers[2] === 'Tengo una idea vaga') { base += 10; high += 15; }
+
+    // Paid without using = confirmed waste
+    if (answers[3] === 'Sí, muchas veces') { base += 15; high += 20; }
+
+    document.getElementById('savings-number').textContent = base + '-' + high + '€';
+    document.getElementById('yearly-savings').textContent =
+      (base * 12) + '-' + (high * 12) + '€';
+  }
+
+  // Email submit
+  function submitEmail() {
+    const email = document.getElementById('email-input').value.trim();
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!re.test(email)) {
+      const input = document.getElementById('email-input');
+      input.style.borderBottomColor = '#FF3B30';
+      input.placeholder = 'Introduce un email válido';
+      setTimeout(() => {
+        input.style.borderBottomColor = '';
+        input.placeholder = 'tu@email.com';
+      }, 2000);
+      return;
+    }
+
+    answers['email'] = email;
+
+    // Disable button to prevent double submit
+    const btn = document.querySelector('#screen-7 .cta-btn');
+    btn.textContent = 'Enviando...';
+    btn.style.opacity = '.6';
+    btn.style.pointerEvents = 'none';
+
+    // Send to Formspree
+    const payload = new FormData();
+    payload.append('email',           email);
+    payload.append('suscripciones',   answers[1] || '');
+    payload.append('conoce_total',    answers[2] || '');
+    payload.append('pagos_olvidados', answers[3] || '');
+    payload.append('cancelacion',     answers[4] || '');
+    payload.append('molestia',        String(answers[5] || ''));
+    payload.append('precio',          answers[6] || '');
+    payload.append('ahorro_estimado', document.getElementById('savings-number').textContent);
+
+    fetch('https://formspree.io/f/xwvnlgnk', {
+      method: 'POST',
+      body: payload,
+      headers: { 'Accept': 'application/json' }
+    })
+    .then(res => {
+      if (res.ok) {
+        showScreen(8);
+      } else {
+        return res.json().then(data => {
+          console.error('Formspree error:', data);
+          showScreen(8); // Show thank you anyway
+        });
+      }
+    })
+    .catch(err => {
+      console.error('Fetch error:', err);
+      showScreen(8);
+    });
+  }
+
+  // Copy link
+  function copyLink() {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      document.getElementById('copy-btn-text').textContent = '¡Link copiado! ✓';
+      setTimeout(() => {
+        document.getElementById('copy-btn-text').textContent = 'Compartir con alguien más';
+      }, 2500);
+    }).catch(() => {
+      document.getElementById('copy-btn-text').textContent = '¡Link copiado! ✓';
+    });
+  }
+
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      if (currentScreen === 0) nextScreen();
+      if (currentScreen === 7) submitEmail();
+    }
+  });
+
+  updateProgress();
+</script>
 
 </body>
-
 </html>
