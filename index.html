@@ -850,20 +850,24 @@ html, body {
     btn.style.pointerEvents = 'none';
 
     // Send to Formspree
-    const payload = new FormData();
-    payload.append('email',           email);
-    payload.append('suscripciones',   answers[1] || '');
-    payload.append('conoce_total',    answers[2] || '');
-    payload.append('pagos_olvidados', answers[3] || '');
-    payload.append('cancelacion',     answers[4] || '');
-    payload.append('molestia',        String(answers[5] || ''));
-    payload.append('precio',          answers[6] || '');
-    payload.append('ahorro_estimado', document.getElementById('savings-number').textContent);
+    const payload = new URLSearchParams({
+      email:            email,
+      suscripciones:    answers[1] || '',
+      conoce_total:     answers[2] || '',
+      pagos_olvidados:  answers[3] || '',
+      cancelacion:      answers[4] || '',
+      molestia:         String(answers[5] || ''),
+      precio:           answers[6] || '',
+      ahorro_estimado:  document.getElementById('savings-number').textContent
+    }).toString();
 
     fetch('https://formspree.io/f/xwvnlgnk', {
       method: 'POST',
       body: payload,
-      headers: { 'Accept': 'application/json' }
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
     })
     .then(res => {
       if (res.ok) {
