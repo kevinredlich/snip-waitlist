@@ -407,6 +407,15 @@ html, body {
   .scale-options { gap: 5px; }
   .scale-num { font-size: 16px; }
   .intro-meta { flex-direction: column; gap: 10px; }
+
+  /* Give enough bottom padding so content clears the fixed back btn */
+  .screen { padding-bottom: 100px !important; }
+
+  /* Back button sits lower on small screens */
+  .back-btn { bottom: 20px; left: 20px; }
+
+  /* CTA button full width on mobile */
+  .cta-btn.large { width: 100%; max-width: 100%; box-sizing: border-box; }
 }
 </style>
 </head>
