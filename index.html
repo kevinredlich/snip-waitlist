@@ -582,16 +582,26 @@ html, body {
 
   <!-- SCREEN 7: EMAIL CAPTURE (el cierre) -->
   <div class="screen" id="screen-6">
-    <div class="q-label">Última pregunta — 6 de 6</div>
-    <div class="q-text">Estás a punto de ser parte de<br><span class="highlight">algo que cambia esto para siempre.</span></div>
+    <div class="q-label">Último paso — 6 de 6</div>
+    <div class="q-text">Ya tienes tu número.<br><span class="highlight">¿Quieres saber el de los demás?</span></div>
 
     <div class="savings-callout" id="dynamic-result">
       <div class="sc-label">Tu estimación de ahorro</div>
       <div class="sc-number" id="savings-number">40-80€</div>
-      <div class="sc-text">al mes recuperables con snip, basado en tus respuestas. Eso son <span id="yearly-savings">480-960€</span> al año que ahora mismo se van solos.</div>
+      <div class="sc-text">al mes recuperables, basado en tus respuestas. Eso son <span id="yearly-savings">480-960€</span> al año que ahora mismo se van solos.</div>
     </div>
 
-    <div class="q-sub" style="margin-bottom:20px;">Déjanos tu email. Serás el primero en acceder cuando abramos la alfa — y te contaremos exactamente cómo funciona antes de lanzar.</div>
+    <!-- Study context -->
+    <div style="display:flex;align-items:flex-start;gap:12px;padding:16px 18px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:10px;margin-bottom:20px;">
+      <div style="font-size:20px;flex-shrink:0;margin-top:1px;">🔬</div>
+      <div style="font-size:13px;color:#AAA;line-height:1.65;">
+        Esta encuesta forma parte de un <strong style="color:rgba(255,255,255,.75);">estudio de validación</strong> para una app en desarrollo. Cuando tengamos suficientes respuestas, publicaremos los resultados — y tú serás el primero en recibirlos.
+      </div>
+    </div>
+
+    <div style="font-size:14px;color:#AAA;margin-bottom:16px;line-height:1.65;text-align:center;">
+      Deja tu email para recibir los resultados del estudio<br>y, si la app se lanza, acceso prioritario.
+    </div>
 
     <div class="text-input-wrap">
       <input
@@ -603,12 +613,25 @@ html, body {
       />
     </div>
 
-    <div style="margin-top:28px;display:flex;flex-direction:column;align-items:center;gap:12px;">
-      <button class="cta-btn large white" onclick="submitEmail()">
-        Quiero acceso a la alfa →
+    <!-- Anti-spam trust signals -->
+    <div style="display:flex;justify-content:center;flex-wrap:wrap;gap:16px;margin-top:14px;margin-bottom:26px;">
+      <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:#777;">
+        <span>🔒</span> Sin spam, nunca
+      </div>
+      <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:#777;">
+        <span>🚫</span> No vendemos tu email
+      </div>
+      <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:#777;">
+        <span>✉️</span> Máximo 2 emails
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+      <button class="cta-btn large white" onclick="submitEmail()" style="gap:10px;width:100%;max-width:360px;justify-content:center;">
+        <span style="font-size:15px;">🔗</span> Compartir mis resultados
       </button>
-      <div style="font-size:11px;color: #888;text-align:center;line-height:1.6;max-width:320px;">
-        Sin spam. Sin vender tu email a nadie. Solo te escribimos cuando snip esté listo.
+      <div style="font-size:11px;color:#555;text-align:center;max-width:300px;line-height:1.6;">
+        Al compartir aceptas que usemos tu email únicamente para enviarte los resultados y, si se lanza, acceso prioritario a la app.
       </div>
     </div>
   </div>
@@ -832,7 +855,6 @@ html, body {
       pagos_olvidados:  answers[3] || '',
       cancelacion:      answers[4] || '',
       molestia:         String(answers[5] || ''),
-      precio:           answers[6] || '',
       ahorro_estimado:  document.getElementById('savings-number').textContent
     }).toString();
 
