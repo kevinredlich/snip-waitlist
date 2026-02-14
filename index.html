@@ -14,8 +14,8 @@
   --white:  #FFFFFF;
   --fog:    #F5F5F3;
   --rule:   #E8E8E5;
-  --mid:    #5A5A5A;
-  --light:  #9A9A9A;
+  --mid:    #888888;
+  --light:  #AAAAAA;
   --green:  #00B87A;
   --red:    #FF3B30;
 }
@@ -61,7 +61,7 @@ html, body {
 }
 .nav-step {
   font-family: 'Geist Mono', monospace;
-  font-size: 11px; color: #444;
+  font-size: 11px; color: #999;
   letter-spacing: .06em;
 }
 
@@ -116,7 +116,7 @@ html, body {
 
 .intro-sub {
   font-size: 17px; font-weight: 400;
-  color: #666; max-width: 420px;
+  color: #BBBBBB; max-width: 420px;
   line-height: 1.6; margin-bottom: 40px;
 }
 
@@ -127,7 +127,7 @@ html, body {
 
 .intro-meta-item {
   display: flex; align-items: center; gap: 7px;
-  font-size: 12px; color: #444;
+  font-size: 12px; color: #999;
 }
 
 .intro-meta-dot {
@@ -150,7 +150,7 @@ html, body {
 }
 
 .q-sub {
-  font-size: 14px; color: #555;
+  font-size: 14px; color: #AAAAAA;
   margin-bottom: 40px; max-width: 440px;
   line-height: 1.6;
 }
@@ -187,7 +187,7 @@ html, body {
   border: 1px solid rgba(255,255,255,.15);
   display: flex; align-items: center; justify-content: center;
   font-family: 'Geist Mono', monospace;
-  font-size: 11px; font-weight: 600; color: #555;
+  font-size: 11px; font-weight: 600; color: #AAAAAA;
   flex-shrink: 0; transition: all .2s;
 }
 
@@ -247,7 +247,7 @@ html, body {
   width: 100%; max-width: 480px;
   margin-top: 8px;
 }
-.scale-label-row span { font-size: 11px; color: #444; }
+.scale-label-row span { font-size: 11px; color: #999; }
 
 /* ── TEXT INPUT ── */
 .text-input-wrap {
@@ -270,7 +270,7 @@ html, body {
 }
 
 .text-input:focus { border-bottom-color: var(--blue); }
-.text-input::placeholder { color: #333; }
+.text-input::placeholder { color: #888; }
 
 .email-input {
   font-size: 20px;
@@ -306,24 +306,24 @@ html, body {
 .cta-btn.white:hover { background: #F0F0F0; }
 
 .cta-secondary {
-  font-size: 13px; color: #444; cursor: pointer;
+  font-size: 13px; color: #999; cursor: pointer;
   margin-top: 16px; background: none; border: none;
   font-family: 'Geist', sans-serif;
   transition: color .2s;
 }
-.cta-secondary:hover { color: #666; }
+.cta-secondary:hover { color: #BBBBBB; }
 
 /* ── BACK BUTTON ── */
 .back-btn {
   position: fixed; bottom: 32px; left: 32px;
   display: flex; align-items: center; gap: 7px;
-  font-size: 12px; color: #333;
+  font-size: 12px; color: #888;
   background: none; border: none;
   font-family: 'Geist', sans-serif;
   cursor: pointer; transition: color .2s;
   z-index: 99;
 }
-.back-btn:hover { color: #666; }
+.back-btn:hover { color: #BBBBBB; }
 .back-btn svg { transition: transform .2s; }
 .back-btn:hover svg { transform: translateX(-3px); }
 
@@ -331,7 +331,7 @@ html, body {
 .continue-hint {
   position: fixed; bottom: 32px; left: 0; right: 0;
   text-align: center;
-  font-size: 11px; color: #333;
+  font-size: 11px; color: #888;
   letter-spacing: .06em;
 }
 
@@ -352,7 +352,7 @@ html, body {
 }
 
 .final-sub {
-  font-size: 16px; color: #555;
+  font-size: 16px; color: #AAAAAA;
   max-width: 400px; line-height: 1.65;
   margin-bottom: 36px;
 }
@@ -366,7 +366,7 @@ html, body {
   display: flex; align-items: center; gap: 6px;
   padding: 8px 14px; border-radius: 20px;
   border: 1px solid rgba(255,255,255,.1);
-  font-size: 12px; color: #555;
+  font-size: 12px; color: #AAAAAA;
 }
 .pill-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
 
@@ -607,7 +607,7 @@ html, body {
       <button class="cta-btn large white" onclick="submitEmail()">
         Quiero acceso a la alfa →
       </button>
-      <div style="font-size:11px;color:#333;text-align:center;line-height:1.6;max-width:320px;">
+      <div style="font-size:11px;color: #888;text-align:center;line-height:1.6;max-width:320px;">
         Sin spam. Sin vender tu email a nadie. Solo te escribimos cuando snip esté listo.
       </div>
     </div>
@@ -641,7 +641,7 @@ html, body {
 
     <div style="padding:20px 28px;border:1px solid rgba(255,255,255,.08);border-radius:10px;max-width:420px;width:100%;text-align:left;background:rgba(255,255,255,.03);">
       <div style="font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--light);margin-bottom:8px;">Mientras tanto</div>
-      <div style="font-size:13px;color:#666;line-height:1.7;">
+      <div style="font-size:13px;color: #BBB;line-height:1.7;">
         Puedes ayudarnos compartiendo este link con alguien que también esté harto de pagar por suscripciones que no usa. Cuanta más gente responda, mejor será el producto que construimos.
       </div>
     </div>
