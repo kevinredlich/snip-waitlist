@@ -669,8 +669,9 @@ html, body {
       </div>
     </div>
 
-    <button class="cta-btn" style="margin-top:28px;" onclick="copyLink()">
-      <span id="copy-btn-text">Compartir con alguien más</span>
+    <button class="cta-btn large white" style="margin-top:28px;gap:10px;width:100%;max-width:360px;justify-content:center;" onclick="copyLink()">
+      <span style="font-size:15px;">🔗</span>
+      <span id="copy-btn-text">Compartir encuesta</span>
     </button>
   </div>
 
@@ -842,8 +843,8 @@ html, body {
     answers['email'] = email;
 
     // Disable button to prevent double submit
-    const btn = document.querySelector('#screen-7 .cta-btn');
-    btn.textContent = 'Enviando...';
+    const btn = document.querySelector('#screen-6 .cta-btn');
+    btn.innerHTML = 'Enviando...';
     btn.style.opacity = '.6';
     btn.style.pointerEvents = 'none';
 
@@ -884,13 +885,28 @@ html, body {
 
   // Copy link
   function copyLink() {
+    const btn = document.querySelector('#screen-7 .cta-btn');
     navigator.clipboard.writeText(window.location.href).then(() => {
-      document.getElementById('copy-btn-text').textContent = '¡Link copiado! ✓';
+      document.getElementById('copy-btn-text').textContent = '✓ Link copiado';
+      btn.style.background = 'var(--green)';
       setTimeout(() => {
-        document.getElementById('copy-btn-text').textContent = 'Compartir con alguien más';
+        document.getElementById('copy-btn-text').textContent = 'Compartir encuesta';
+        btn.style.background = '';
       }, 2500);
     }).catch(() => {
-      document.getElementById('copy-btn-text').textContent = '¡Link copiado! ✓';
+      // Fallback for browsers that block clipboard
+      const ta = document.createElement('textarea');
+      ta.value = window.location.href;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      document.getElementById('copy-btn-text').textContent = '✓ Link copiado';
+      btn.style.background = 'var(--green)';
+      setTimeout(() => {
+        document.getElementById('copy-btn-text').textContent = 'Compartir encuesta';
+        btn.style.background = '';
+      }, 2500);
     });
   }
 
