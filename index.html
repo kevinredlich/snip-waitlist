@@ -404,18 +404,69 @@ html, body {
 #dynamic-result { transition: all .3s; }
 
 @media (max-width: 600px) {
+  /* ── Layout ── */
+  body { overflow-y: auto; }
+  .screen {
+    padding: 72px 20px 120px !important;
+    justify-content: flex-start !important;
+  }
+
+  /* ── Typography ── */
+  .intro-title { font-size: 32px !important; }
+  .q-text { font-size: 20px !important; line-height: 1.3 !important; }
+  .q-sub { font-size: 14px !important; }
+  .intro-sub { font-size: 15px !important; }
+
+  /* ── Intro meta pills ── */
+  .intro-meta { flex-direction: column; gap: 8px; align-items: flex-start; }
+
+  /* ── Options ── */
+  .option {
+    padding: 14px 16px !important;
+    font-size: 14px !important;
+  }
+  .option-key { width: 28px !important; height: 28px !important; font-size: 11px !important; }
+
+  /* ── Scale ── */
   .scale-options { gap: 5px; }
-  .scale-num { font-size: 16px; }
-  .intro-meta { flex-direction: column; gap: 10px; }
+  .scale-num { font-size: 16px; width: 44px !important; height: 44px !important; }
+  .scale-label-row span { font-size: 10px !important; }
 
-  /* Give enough bottom padding so content clears the fixed back btn */
-  .screen { padding-bottom: 100px !important; }
+  /* ── Savings callout ── */
+  .savings-callout { padding: 20px !important; }
+  .sc-number { font-size: 42px !important; }
 
-  /* Back button sits lower on small screens */
-  .back-btn { bottom: 20px; left: 20px; }
+  /* ── CTA button ── */
+  .cta-btn { font-size: 15px !important; padding: 16px 24px !important; }
+  .cta-btn.large { width: 100% !important; max-width: 100% !important; box-sizing: border-box; }
 
-  /* CTA button full width on mobile */
-  .cta-btn.large { width: 100%; max-width: 100%; box-sizing: border-box; }
+  /* ── Email input ── */
+  .text-input { font-size: 16px !important; } /* prevents iOS zoom */
+
+  /* ── Trust signals ── */
+  #screen-6 [style*="justify-content:center"] {
+    flex-wrap: wrap;
+    gap: 10px !important;
+  }
+
+  /* ── Back button ── */
+  .back-btn { bottom: 20px !important; left: 20px !important; }
+
+  /* ── Top nav ── */
+  .top-nav { padding: 14px 20px !important; }
+
+  /* ── Final pills ── */
+  .final-pills { flex-direction: column !important; gap: 8px !important; }
+  .pill { justify-content: flex-start !important; }
+
+  /* ── Final share btn ── */
+  #screen-7 .cta-btn { width: 100% !important; max-width: 100% !important; }
+}
+
+@media (max-width: 380px) {
+  .intro-title { font-size: 26px !important; }
+  .q-text { font-size: 18px !important; }
+  .sc-number { font-size: 36px !important; }
 }
 </style>
 </head>
@@ -592,24 +643,21 @@ html, body {
   <!-- SCREEN 7: EMAIL CAPTURE (el cierre) -->
   <div class="screen" id="screen-6">
     <div class="q-label">Último paso — 6 de 6</div>
-    <div class="q-text">Ya tienes tu número.<br><span class="highlight">¿Quieres saber el de los demás?</span></div>
+    <div class="q-text">Ya casi está.<br><span class="highlight">¿Dónde enviamos tu resultado?</span></div>
 
-    <div class="savings-callout" id="dynamic-result">
-      <div class="sc-label">Tu estimación de ahorro</div>
-      <div class="sc-number" id="savings-number">40-80€</div>
-      <div class="sc-text">al mes recuperables, basado en tus respuestas. Eso son <span id="yearly-savings">480-960€</span> al año que ahora mismo se van solos.</div>
+    <!-- Teaser locked -->
+    <div style="padding:20px 24px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;margin-bottom:24px;text-align:center;">
+      <div style="font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#666;margin-bottom:10px;font-family:'Geist Mono',monospace;">Tu estimación de ahorro</div>
+      <div style="font-size:52px;font-weight:900;letter-spacing:-.04em;color:rgba(255,255,255,.15);font-family:'Geist Mono',monospace;line-height:1;margin-bottom:6px;">••€</div>
+      <div style="font-size:12px;color:#666;">Introduce tu email para ver tu resultado</div>
     </div>
 
     <!-- Study context -->
-    <div style="display:flex;align-items:flex-start;gap:12px;padding:16px 18px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:10px;margin-bottom:20px;">
-      <div style="font-size:20px;flex-shrink:0;margin-top:1px;">🔬</div>
-      <div style="font-size:13px;color:#AAA;line-height:1.65;">
-        Esta encuesta forma parte de un <strong style="color:rgba(255,255,255,.75);">estudio de validación</strong> para una app en desarrollo. Cuando tengamos suficientes respuestas, publicaremos los resultados — y tú serás el primero en recibirlos.
+    <div style="display:flex;align-items:flex-start;gap:12px;padding:14px 16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;margin-bottom:20px;">
+      <div style="font-size:18px;flex-shrink:0;">🔬</div>
+      <div style="font-size:12px;color:#AAA;line-height:1.6;">
+        Estudio de validación para una app en desarrollo. Tus respuestas son anónimas y nunca compartimos tu email.
       </div>
-    </div>
-
-    <div style="font-size:14px;color:#AAA;margin-bottom:16px;line-height:1.65;text-align:center;">
-      Deja tu email para recibir los resultados del estudio<br>y, si la app se lanza, acceso prioritario.
     </div>
 
     <div class="text-input-wrap">
@@ -623,7 +671,7 @@ html, body {
     </div>
 
     <!-- Anti-spam trust signals -->
-    <div style="display:flex;justify-content:center;flex-wrap:wrap;gap:16px;margin-top:14px;margin-bottom:26px;">
+    <div style="display:flex;justify-content:center;flex-wrap:wrap;gap:14px;margin-top:12px;margin-bottom:22px;">
       <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:#777;">
         <span>🔒</span> Sin spam, nunca
       </div>
@@ -635,13 +683,11 @@ html, body {
       </div>
     </div>
 
-    <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
-      <button class="cta-btn large white" onclick="submitEmail()" style="gap:10px;width:100%;max-width:360px;justify-content:center;">
-        <span style="font-size:15px;">🔗</span> Compartir mis resultados
-      </button>
-      <div style="font-size:11px;color:#555;text-align:center;max-width:300px;line-height:1.6;">
-        Al compartir aceptas que usemos tu email únicamente para enviarte los resultados y, si se lanza, acceso prioritario a la app.
-      </div>
+    <button class="cta-btn large white" onclick="submitEmail()" style="width:100%;max-width:360px;justify-content:center;">
+      Ver mi resultado →
+    </button>
+    <div style="font-size:11px;color:#555;text-align:center;max-width:300px;line-height:1.6;margin-top:10px;">
+      Al continuar aceptas que usemos tu email para enviarte el resultado y, si se lanza, acceso prioritario.
     </div>
   </div>
 
@@ -649,11 +695,15 @@ html, body {
   <div class="screen" id="screen-7">
     <div class="final-icon">✓</div>
     <div class="final-title">
-      Ya estás dentro.<br>
-      <span class="highlight-green">Bien hecho.</span>
+      Tu resultado.<br>
+      <span class="highlight-green">Aquí está.</span>
     </div>
-    <div class="final-sub">
-      Eres parte del grupo fundador de snip. Te escribiremos antes que a nadie cuando abramos la alfa — y tu feedback va a dar forma al producto.
+
+    <!-- THE RESULT — shown here for the first time -->
+    <div class="savings-callout" id="dynamic-result" style="width:100%;max-width:420px;margin-bottom:20px;">
+      <div class="sc-label">Tu estimación de ahorro mensual</div>
+      <div class="sc-number" id="savings-number">40-80€</div>
+      <div class="sc-text">al mes recuperables. Eso son <span id="yearly-savings">480-960€</span> al año que ahora mismo se van solos — basado en tus respuestas.</div>
     </div>
 
     <div class="final-pills">
@@ -671,14 +721,14 @@ html, body {
       </div>
     </div>
 
-    <div style="padding:20px 28px;border:1px solid rgba(255,255,255,.08);border-radius:10px;max-width:420px;width:100%;text-align:left;background:rgba(255,255,255,.03);">
-      <div style="font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--light);margin-bottom:8px;">Mientras tanto</div>
-      <div style="font-size:13px;color: #BBB;line-height:1.7;">
-        Puedes ayudarnos compartiendo este link con alguien que también esté harto de pagar por suscripciones que no usa. Cuanta más gente responda, mejor será el producto que construimos.
+    <div style="padding:16px 20px;border:1px solid rgba(255,255,255,.08);border-radius:10px;max-width:420px;width:100%;text-align:left;background:rgba(255,255,255,.03);margin-bottom:20px;">
+      <div style="font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--light);margin-bottom:8px;">Ayúdanos a llegar a más gente</div>
+      <div style="font-size:13px;color:#BBB;line-height:1.7;">
+        Comparte la encuesta con alguien que también esté harto de pagar por suscripciones que no usa. Cuantas más respuestas, mejor el producto.
       </div>
     </div>
 
-    <button class="cta-btn large white" style="margin-top:28px;gap:10px;width:100%;max-width:360px;justify-content:center;" onclick="copyLink()">
+    <button class="cta-btn large white" style="gap:10px;width:100%;max-width:360px;justify-content:center;" onclick="copyLink()">
       <span style="font-size:15px;">🔗</span>
       <span id="copy-btn-text">Compartir encuesta</span>
     </button>
